@@ -1,7 +1,10 @@
 package com.security.ss7permission.config;
 
 
-import com.security.DocumentPermissionEvaluator;
+import com.security.ss7permission.evaluator.DocumentMethodAuthManager;
+import com.security.ss7permission.evaluator.DocumentPermissionEvaluator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.PermissionEvaluator;
@@ -16,10 +19,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(
+        prePostEnabled = true, // @PreAuthorize , @PreFilter, @PostAuthorize, @PostFilter
+         securedEnabled = true, // @Secured
+        jsr250Enabled = true // @RolesAllowed
+)
 public class ProjectConfig
         extends GlobalMethodSecurityConfiguration {
 
+    @Autowired
+    public ApplicationContext applicationContext;
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -27,11 +36,13 @@ public class ProjectConfig
 
         var u1 = User.withUsername("john")
                 .authorities("read")
+                .roles("MANAGER")
                 .password("123")
                 .build();
 
         var u2 = User.withUsername("bill")
                 .authorities("write")
+                .roles("ADMIN")
                 .password("123")
                 .build();
 
@@ -50,6 +61,7 @@ public class ProjectConfig
     protected MethodSecurityExpressionHandler createExpressionHandler() {
         var meh = new DefaultMethodSecurityExpressionHandler();
         meh.setPermissionEvaluator(permissionEvaluator());
+        meh.setApplicationContext(applicationContext);
         return meh;
     }
 

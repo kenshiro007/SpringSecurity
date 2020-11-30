@@ -1,9 +1,8 @@
-package com.security;
+package com.security.ss7permission.evaluator;
 
 import com.security.ss7permission.model.Document;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
 import java.util.List;
